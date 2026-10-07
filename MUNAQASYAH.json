@@ -1,0 +1,1503 @@
+{
+  "name": "MUNAQASYAH",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -656,
+        2080
+      ],
+      "id": "d52bf1ff-874d-4e54-9404-1d96782f548c",
+      "name": "Telegram Trigger",
+      "webhookId": "9cb619c7-fa2c-4109-b05b-28d225d668d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "f8d266f0-0a44-4f17-ad5d-0f969e26c0d7"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2f61d371-9660-4081-ba81-028729be8847",
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Photo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f1fa3946-9e1a-4191-91f2-790263997951",
+                    "leftValue": "={{ $json.message.document }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Document"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2a2fe122-14ee-4360-bd66-9ca8fbf2a621",
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        1568
+      ],
+      "id": "6b84600c-6980-4911-9d75-4305b983ccae",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# PARAMETER JANGKAR INTERPRETER (ANTI-CRASH LOGIC)\n- USER_PENGIRIM: \"{{ $('Telegram Trigger').first().json.message.from.first_name || 'User_Telegram' }}\"\n- JENIS_INPUT_SISTEM: \"{{ $json.jenis_input }}\"\n- TEXT_INPUT_USER: \"{{ $json.jenis_input === 'Input 1' ? $json.teks_final : '' }}\"\n- HASIL_EKSTRAKSI_MEDIA: \"{{ $json.jenis_input !== 'Input 1' ? $json.teks_final : '' }}\"\n- LINK_FOTO_DRIVE: \"{{ $json.jenis_input === 'Input 2' ? $json.link_drive : '-' }}\"\n- LINK_DOKUMEN_DRIVE: \"{{ $json.jenis_input === 'Input 3' ? $json.link_drive : '-' }}\"\n- LINK_SUARA_DRIVE: \"{{ $json.jenis_input === 'Input 4' ? $json.link_drive : '-' }}\"\n- URL_GOOGLE_SHEETS_UTAMA: \"https://docs.google.com/spreadsheets/d/181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY/edit?usp=sharing\"\n\n# PERAN UTAMA ASISTEN\nKamu adalah Asisten Keuangan Otomatis untuk operasional tahun berjalan 2026. Tugasmu adalah memproses data transaksi keuangan dan melakukan rekapitulasi data secara mandiri berdasarkan seluruh input yang diterima oleh sistem.\n\n# 1. PEMROSESAN INPUT SECARA OTONOM\nPeriksa informasi yang tersedia pada TEXT_INPUT_USER atau HASIL_EKSTRAKSI_MEDIA. Gunakan kemampuan penalaran alamimu untuk menentukan arah transaksi, nominal, nama merchant, kategori, dan deskripsi secara logis. Untuk menjaga kerapian data, seluruh penulisan deskripsi dan catatan audit wajib menggunakan kata baku penuh tanpa singkatan.\n\n# 2. KONDISI EKSEKUSI DAN PENGISIAN LAYANAN\nSelalu jalankan pemanggilan tool Append or update row in sheet untuk setiap data transaksi yang masuk dengan ketentuan pemetaan berikut ini:\n- Tanggal: Sesuai tanggal yang tertera pada nota, atau gunakan tanggal hari ini jika tidak terdeteksi: {{ $now.setZone('Asia/Makassar').toFormat('dd/MM/yyyy') }}\n- Nominal: Isi dengan angka bulat finansial yang ditemukan di dalam teks. Jika teks benar-benar kosong atau tidak ada angka sama sekali, isi dengan angka 0.\n- Merchant: Nama entitas toko atau vendor yang ditemukan, atau isi dengan kata Umum jika tidak terdeteksi.\n- Kategori: Pilih salah satu yang paling cocok antara Operasional, Transportasi, Inventaris, Konsumsi, Pendapatan, atau Lain-lain.\n- Deskripsi: Jika ada teks transaksi, tulis detail alokasi dananya. Jika teks kosong akibat media tidak terbaca atau transkripsi kosong, tulis secara otomatis: Dokumen atau rekaman suara masuk tanpa teks, memerlukan peninjauan manual.\n- Media Input: Sesuai isi dari JENIS_INPUT_SISTEM (Teks, Foto, Dokumen, atau Suara).\n- Database: Tautan dari LINK_FOTO_DRIVE, LINK_DOKUMEN_DRIVE, atau LINK_SUARA_DRIVE yang aktif. Isi dengan tanda strip (-) jika input hanya berupa teks biasa.\n- User: Nilai dari USER_PENGIRIM.\n- Status Otorisasi: Isi dengan status Valid jika dokumen berupa struk cetak ritel modern atau bukti transfer resmi. Isi dengan status Pending jika transaksi berupa teks, suara, nota kosongan tulisan tangan, atau jika nominal bernilai 0.\n\nJika teks mengandung perintah rekapitulasi seperti /rekap harian, /rekap mingguan, /rekap bulanan, /rekap kuartal, atau /rekap tahunan, maka panggil tool Get row(s) in sheet untuk menghitung akumulasi data keuangan.\n\n# ALUR BALASAN AKHIR PENGGUNA\nDATA TRANSAKSI MASUK\n---\nTanggal: [Isi Tanggal]\nNominal: Rp [Isi Nominal]\nMerchant: [Isi Merchant]\nKategori: [Isi Kategori]\n---\nMedia Input: [Isi Media Input]\nStatus Audit AI: [Isi Status Valid atau Pending]\nCatatan Audit: [Berikan alasan penentuan status otorisasi secara logis dan mengalir tanpa singkatan]\n---\nLink Bukti Drive: [Tautan Link]\nLink Google Sheets: [URL_GOOGLE_SHEETS_UTAMA]",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1712,
+        1600
+      ],
+      "id": "d33eb814-42fc-4fc3-8539-f76911443946",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "contextWindowLength": 3
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        1712,
+        1824
+      ],
+      "id": "dca0b048-7a8f-4bfa-b4fb-6efa746106cf",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1584,
+        1824
+      ],
+      "id": "feef92eb-288f-429f-b3dd-a594ca401b09",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "sJRzOrnBBidf8QS7",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1136,
+        1568
+      ],
+      "id": "64600445-6274-4166-8f34-78add3628bc3",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {
+          "joinPages": true,
+          "maxPages": 2
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        688,
+        1776
+      ],
+      "id": "74e3abc1-4240-4051-8b74-7f0581c7288a",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo.last().file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        1248
+      ],
+      "id": "961ff78c-37cd-4e11-bafe-7ecf3bc8bebb",
+      "name": "Get a image",
+      "webhookId": "c95612e4-422c-4f26-8d7d-c4c985f8bc56",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        1680
+      ],
+      "id": "544abb04-9cf4-46e3-9886-c8e7d7245069",
+      "name": "Get a Document",
+      "webhookId": "51288333-f289-40fa-8e87-aceda30ba420",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        2064
+      ],
+      "id": "fd37f69b-3e12-4413-841b-0198acc1a63d",
+      "name": "Get a Voice",
+      "webhookId": "addb7a58-1026-49ec-a5a7-4821e9820988",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.5-flash"
+        },
+        "inputType": "binary",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        688,
+        2160
+      ],
+      "id": "a333dbcb-549b-4f96-a19f-8e152219ac08",
+      "name": "Transcribe a recording",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "i37jddLQY73Hbxtj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $node[\"Telegram Trigger\"].json.message?.document?.file_name || 'dokumen_' + $now.toFormat('yyyyMMdd_HHmmss') + '.pdf' }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1C92sXLR-NLTv1q1kBwO-m54WUSzXnktE",
+          "mode": "list",
+          "cachedResultName": "database skripsi",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1C92sXLR-NLTv1q1kBwO-m54WUSzXnktE"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        688,
+        1584
+      ],
+      "id": "1e5bda0c-a9fd-4632-8c00-77bb1f9c0260",
+      "name": "Upload file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cHpKoSktNyT7MS8S",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $node[\"Telegram Trigger\"].json.message?.document?.file_name || $node[\"Telegram Trigger\"].json.message?.audio?.file_name || ($node[\"Telegram Trigger\"].json.message?.voice ? 'voice_' + $node[\"Telegram Trigger\"].json.message.voice.file_id + '.ogg' : 'rekaman_' + $now.toFormat('yyyyMMdd_HHmmss') + '.mp3') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1C92sXLR-NLTv1q1kBwO-m54WUSzXnktE",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        688,
+        1968
+      ],
+      "id": "bcb14190-33bb-4f75-899b-156a8efda9b5",
+      "name": "Upload file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cHpKoSktNyT7MS8S",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "replyMarkup": "forceReply",
+        "forceReply": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2176,
+        1600
+      ],
+      "id": "583ba86f-cbf3-41e6-a298-95cee0019fa0",
+      "name": "Send a text message",
+      "webhookId": "d3a16d12-aeab-4f6c-8fa6-8016e23d847c",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "NewSL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID Transaksi": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ID_Transaksi__using_to_match_', `Deskripsi Formal: Sebuah pengenal unik hibrida standar industri dengan format alfanumerik komprehensif TRX-TG-YYMMDD-XXXXS. Pengenal ini diproduksi secara dinamis oleh n8n engine pada saat workflow tereksekusi dengan mengombinasikan token identitas media (Telegram Gateway), kluster tanggal pencatatan (Chronological Batching), kode acak kriptografis 4 digit, serta diakhiri dengan satu karakter alfanumerik acak (Anti-Collision Suffix) untuk mengeliminasi risiko duplikasi data pada kondisi lonjakan trafik simultan (race condition).\n\nAturan Validasi: Bersifat mutlak, unik, dan tidak boleh kosong (not null). Berfungsi sebagai Primary Key tiruan (Surrogate Key) berukuran 17 karakter yang menjamin integritas referensial data serta mempermudah proses audit jejak langkah (audit trail), apabila di kemudian hari arsitektur spreadsheet ini bermigrasi ke sistem RDBMS formal.`, 'string') }}",
+            "Tanggal Pencatatan": "={{ $now.setZone('Asia/Makassar').toFormat('dd/MM/yyyy HH:mm:ss') }}",
+            "Tanggal Transaksi": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Tanggal_Transaksi', `Deskripsi Formal:\nAtribut penentu periode akuntansi berdasarkan peristiwa ekonomi yang terjadi.\n\nAturan Validasi:\nKamu adalah sistem akuntansi pintar. Tugasmu adalah menetapkan nilai untuk kolom \"Tanggal Transaksi\" dengan format DD/MM/YYYY berdasarkan hierarki:\n\nPilihan 1 (Prioritas): Ekstrak tanggal eksplisit dari teks atau nota. Jika menggunakan kata relatif (\"kemarin\", \"hari ini\", \"lusa\"), hitung berdasarkan \"Tanggal Pencatatan\".\n\nPilihan 2 (Fallback): Jika tidak ada data waktu, WAJIB menggunakan \"Tanggal Pencatatan\" sebagai acuan tanggal transaksi. Dilarang keras melakukan asumsi tahun di luar tahun berjalan.`, 'string') }}",
+            "Jenis Transaksi": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Jenis_Transaksi', `Atribut penentu arah arus kas perusahaan yang dianalisis dari semantik pesan melalui pemetaan kata kunci kontekstual oleh LLM.\n\nAturan Validasi:\nNilai harus masuk ke dalam salah satu dari dua opsi ketat: \"Pemasukan\" atau \"Pengeluaran\". Ambiguitas diarahkan secara otomatis ke opsi \"Pengeluaran\".`, 'string') }}",
+            "Database": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Database', `Deskripsi Formal:\nURL penunjuk lokasi (Uniform Resource Locator) penyimpanan objek digital berbasis cloud pada Google Drive yang terhubung langsung dengan baris transaksi.\n\nAturan Validasi:\nKolom terisi otomatis berupa link publik pasca-proses unggah berhasil dilakukan oleh API Google Drive. Jika input murni teks, diisi dengan parameter kosong (null/blank).`, 'string') }}",
+            "Media Input": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Media_Input', `Deskripsi Formal:\nAtribut struktural yang merekam jenis arsitektur pesan multimedia yang digunakan oleh pengguna saat berinteraksi dengan Bot Telegram.\n\nAturan Validasi:\nDiisi oleh sistem berdasarkan pembagian jalur logika (Switch Node) dengan klasifikasi: Teks, Foto, Suara, atau Dokumen.`, 'string') }}",
+            "Metode Pembayaran": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Metode_Pembayaran', `Deskripsi Formal:\nPencatatan media transfer nilai ekonomis yang digunakan oleh perusahaan saat bertransaksi.\n\nAturan Validasi:\nNilai dikunci pada opsi: Tunai, Transfer Bank, QRIS, atau Kartu Kredit. Apabila gagal terdeteksi, dialokasikan pada nilai default \"Tunai\".`, 'string') }}",
+            "Kategori": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Kategori', `Deskripsi Formal:\nKlasifikasi akun Chart of Accounts (COA) perusahaan untuk pengelompokan biaya atau pendapatan sesuai standar operasional.\n\nAturan Validasi:\nWajib disesuaikan dengan daftar kategori perusahaan (misal: Operasional, Inventaris, Transportasi, Gaji, dan jika masih menebaknya silahkan buat Kategori baru). Jika tidak teridentifikasi, gunakan kategori \"Lain-lain\".`, 'string') }}",
+            "Nama Merchant": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Nama_Merchant', `Deskripsi Formal:\nEntitas penentu vendor, brand, aplikasi, maupun institusi tempat dana dialokasikan atau diterima.\n\nAturan Validasi:\nApabila data input tidak menyertakan identitas vendor, sistem secara otomatis mengisinya dengan label konstan \"Tidak Diketahui / Umum\".`, 'string') }}",
+            "Sub Kategori": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sub_Kategori', `Deskripsi Formal:\nAtribut detail untuk alokasi dana spesifik, seperti nama proyek atau tujuan anggaran yang lebih rinci.\n\nAturan Validasi:\nDiisi berdasarkan analisis konteks item yang dibeli. Jika tidak spesifik, diisi dengan label \"Umum\".`, 'string') }}",
+            "Daftar Barang": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Daftar_Barang', `Deskripsi Formal:\nRingkasan item atau jasa yang mencakup kuantitas, nama barang, dan harga satuan dalam satu baris teks.\n\nAturan Validasi:\nFormat penulisan diharapkan konsisten (Contoh: \"2x Kertas A4 @50000\"). Jika data berupa narasi, sistem merangkumnya menjadi daftar ringkas.`, 'string') }}",
+            "Nominal (Subtotal)": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Nominal__Subtotal_', `Deskripsi Formal:\nRepresentasi nilai moneter total dari transaksi keuangan yang telah dibersihkan dari seluruh simbol pemisah ribuan maupun mata uang.\n\nAturan Validasi:\nHarus berupa tipe data numerik murni. Jika pesan tidak mengandung informasi kuantitas angka, sistem mengisi nilai baku berupa 0 (nol).`, 'string') }}",
+            "Deskripsi Transaksi": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Deskripsi_Transaksi', `Deskripsi Formal:\nInformasi pelengkap yang memuat ringkasan atau detail alasan dilakukannya transaksi ekonomi tersebut.\n\nAturan Validasi:\nBerupa string dinamis. Jika input hanya berupa media mentah tanpa keterangan verbal, diisi dengan klausa otomatis: \"Pencatatan transaksi otomatis via bot tanpa deskripsi tambahan\".`, 'string') }}",
+            "Status Verifikasi Transaksi": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status_Verifikasi_Transaksi', `Deskripsi Formal:\nIndikator ini berfungsi sebagai parameter verifikasi dan status validasi data transaksi finansial di dalam alur kerja tata kelola keuangan perusahaan. Komponen ini dirancang untuk menjembatani lapisan penyaringan awal oleh kecerdasan buatan dengan lapisan keputusan akhir oleh manajemen melalui mekanisme Human-in-the-Loop. Keberadaan indikator ini sangat krusial dalam laporan skripsi untuk menunjukkan sistem perlindungan data yang mampu menjaga integritas basis data, meminimalisir risiko salah input, serta mendeteksi potensi kecurangan pencatatan keuangan secara otomatis sebelum data dianggap sah.\n\nAturan Validasi:\nNilai pada kolom ini wajib berupa salah satu dari tiga opsi mutlak, yaitu \"Valid\", \"Pending\", atau \"Ditolak\". Setiap data transaksi baru secara bawaan (default) ditetapkan sebagai \"Pending\" sebelum diverifikasi, terutama untuk masukan konvensional berupa teks dan suara yang tidak memiliki bukti digital pihak ketiga sehingga rentan manipulasi subjektif. Status akan berubah menjadi \"Valid\" jika dokumen atau foto nota yang dikirim terbukti memenuhi kriteria keabsahan, seperti struktur resmi bukti transfer bank, berasal dari merek korporasi besar yang jelas, atau memuat komponen otorisasi berupa tanda tangan atasan dan stempel toko. Pilihan \"Ditolak\" dapat dipilih secara manual oleh admin atau atasan melalui lembar kerja jika bukti fisik terindikasi palsu atau tidak sesuai dengan aturan keuangan.`, 'string') }}",
+            "Penanggung Jawab": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Penanggung_Jawab', `Deskripsi Formal:\nParameter ini berfungsi untuk menunjukkan identitas digital atau nama personel yang melakukan penginputan, pengiriman data, atau bertindak sebagai penanggung jawab utama atas pencatatan riwayat transaksi keuangan ke dalam sistem, yang sekaligus berperan sebagai jalur rekam jejak (audit trail) guna menjaga aspek akuntabilitas, otentisitas, dan transparansi di dalam basis data operasional organisasi sepanjang tahun berjalan 2026.\n\nAturan Validasi:\nDalam proses validasi, AI wajib mengekstrak dan memetakan nilai ini secara mutlak dari parameter jangkar USER_PENGIRIM tanpa boleh merekayasa, menebak, atau mengubahnya menjadi nama merchant atau pihak ketiga lainnya, di mana jika data tersebut terdeteksi kosong atau tidak terdefinisi oleh sistem n8n, AI harus secara otomatis menggunakan nilai default standar yaitu 'User_Telegram' dengan format penulisan huruf kapital di awal kata (Title Case) serta bersih dari karakter khusus eksternal yang tidak diperlukan.`, 'string') }}"
+          },
+          "matchingColumns": [
+            "ID Transaksi"
+          ],
+          "schema": [
+            {
+              "id": "ID Transaksi",
+              "displayName": "ID Transaksi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tanggal Pencatatan",
+              "displayName": "Tanggal Pencatatan",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tanggal Transaksi",
+              "displayName": "Tanggal Transaksi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Jenis Transaksi",
+              "displayName": "Jenis Transaksi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nama Merchant",
+              "displayName": "Nama Merchant",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Metode Pembayaran",
+              "displayName": "Metode Pembayaran",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Kategori",
+              "displayName": "Kategori",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sub Kategori",
+              "displayName": "Sub Kategori",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Daftar Barang",
+              "displayName": "Daftar Barang",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nominal (Subtotal)",
+              "displayName": "Nominal (Subtotal)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deskripsi Transaksi",
+              "displayName": "Deskripsi Transaksi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Media Input",
+              "displayName": "Media Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Penanggung Jawab",
+              "displayName": "Penanggung Jawab",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status Verifikasi Transaksi",
+              "displayName": "Status Verifikasi Transaksi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Database",
+              "displayName": "Database",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1840,
+        1824
+      ],
+      "id": "f550dc4a-3c05-4ca6-8612-167d57d767aa",
+      "name": "Append or update row in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0GfUd9vv8GktUGXJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ 'nota_' + $now.toFormat('yyyyMMdd_HHmmss') + '.jpg' }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1C92sXLR-NLTv1q1kBwO-m54WUSzXnktE",
+          "mode": "list",
+          "cachedResultName": "database skripsi",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1C92sXLR-NLTv1q1kBwO-m54WUSzXnktE"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        688,
+        1168
+      ],
+      "id": "419ee594-2f93-42c9-a2d9-159f075c81aa",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cHpKoSktNyT7MS8S",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        912,
+        1248
+      ],
+      "id": "bee4cdab-01ff-4dfd-973b-578d05d9f56a",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        912,
+        1680
+      ],
+      "id": "e9d14bde-7d36-4866-8cae-05234d257557",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        912,
+        2064
+      ],
+      "id": "531374a6-2846-40fc-9ee9-81eb48ad870a",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "=181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "NewSL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY/edit#gid=0"
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1968,
+        1824
+      ],
+      "id": "31866217-8bb6-4e91-af87-85af5f752406",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0GfUd9vv8GktUGXJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "0eb0aab3-db52-47d6-a4f2-ff29e5e0d3ac",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        1248
+      ],
+      "id": "d7388310-f958-45d4-bd59-4c66b37935c2",
+      "name": "Webhook",
+      "webhookId": "0eb0aab3-db52-47d6-a4f2-ff29e5e0d3ac"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Mohon maaf, sistem mendeteksi adanya kegagalan parsing atau interferensi jaringan saat menerima data pembukuan Anda. Silakan kirim ulang pesan, foto, dokumen, atau rekaman suara Anda beberapa saat lagi.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -432,
+        2176
+      ],
+      "id": "e7ddc097-0e81-4bfb-96d7-48886469dd9a",
+      "name": "Send a text message1",
+      "webhookId": "eb72532f-b9c4-4b8d-bf86-5c66b4dbebec",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1294401282,
+          "mode": "list",
+          "cachedResultName": "SessionLogs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY/edit#gid=1294401282"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "chat_id",
+              "lookupValue": "={{ $json.message.chat.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -432,
+        1984
+      ],
+      "id": "33966af6-3861-4901-9067-f6b76c6434bc",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0GfUd9vv8GktUGXJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b606ef95-9fff-4673-8d93-c12ef8149486",
+              "leftValue": "={{ $json.status_sesi }}",
+              "rightValue": "AKTIF",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "794383ad-ae17-4b21-b01e-0c99992f2457",
+              "leftValue": "={{ $now.toUnixInteger() - Number($json.timestamp_login) }}",
+              "rightValue": 1800,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -208,
+        1984
+      ],
+      "id": "92cd136b-54c5-4f90-aec0-9aea4a668467",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Ambil ID waktu unik yang berganti setiap 15 menit (900.000 milidetik)\nconst blockWaktu = Math.floor(Date.now() / 900000);\n\n// 2. Rumus matematika LCG dengan salt rahasia agar menghasilkan 6 digit yang konsisten selama 15 menit\nconst seed = blockWaktu ^ 54321; \nconst otpSistem = ((seed * 1103515245 + 12345) % 900000 + 100000).toString();\n\n// 3. Tampilkan langsung ke web browser pengguna\nreturn [{\n    json: {\n        status: \"AUTHORIZED_GATEWAY\",\n        sistem: \"SmartLedger Secure Session\",\n        otp_dinamis: otpSistem,\n        catatan: \"Kode ini akan tetap sama jika di-refresh dalam rentang 15 menit yang sama.\",\n        berlaku: \"Maksimal 15 Menit\"\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        1248
+      ],
+      "id": "162e5671-4703-4c4a-a11f-e405d3f0c246",
+      "name": "otp"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "826c6281-1334-4d43-83d6-5e3e9a5b774f",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "={{ $json.otp_sah_sistem }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        2448
+      ],
+      "id": "a3af08a4-238d-4eca-b560-9da50459ffb6",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1294401282,
+          "mode": "list",
+          "cachedResultName": "SessionLogs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/181DTzuHXd0lMpzRfFUUW3HvGdRfT-zaVJ22fov_KoSY/edit#gid=1294401282"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $json.message.chat.id }}",
+            "status_sesi": "AKTIF",
+            "timestamp_login": "={{ $now.toUnixInteger() }}"
+          },
+          "matchingColumns": [
+            "chat_id"
+          ],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status_sesi",
+              "displayName": "status_sesi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp_login",
+              "displayName": "timestamp_login",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        2352
+      ],
+      "id": "f52779fb-d6b9-4a98-81cc-3111c811e5e8",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0GfUd9vv8GktUGXJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "🔒 Otorisasi Berhasil!   Sesi akses aman Anda telah dibuka dan aktif selama 15 menit ke depan. Silakan kirimkan berkas dokumen, foto nota, atau rekaman suara transaksi finansial Anda untuk diproses oleh SmartLedger AI.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        688,
+        2352
+      ],
+      "id": "43cf97e1-d3b7-4f2b-a7e6-d07c6d1e3c2b",
+      "name": "Send a text message2",
+      "webhookId": "e05a13fe-d978-4034-bf2a-097442ab127e",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "⚠️ Akses Terkunci!  Sesi Anda tidak aktif atau telah berakhir. Untuk alasan keamanan sistem, Anda diwajibkan melakukan otentikasi terlebih dahulu.   Silakan masukkan kata sandi OTP dinamis yang sah untuk membuka gerbang akses otomatisasi pembukuan.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        2544
+      ],
+      "id": "d96e722a-26bd-41f9-a1c2-f90837a41f02",
+      "name": "Send a text message3",
+      "webhookId": "82f8c275-c05d-4968-839f-3612bc4e5844",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8119855552",
+        "text": "=[SECURITY SYSTEM] Kode OTP dinamis baru Anda telah dibuat oleh sistem:   🔑 {{ $json.otp_terbuat }}  Gunakan kode di atas untuk membuka sesi akses SmartLedger AI Anda. Kode ini hanya berlaku untuk satu kali aktivasi.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        1248
+      ],
+      "id": "b55a4c36-2080-49bd-837d-ce9a9aabdb95",
+      "name": "Send a text message4",
+      "webhookId": "901f2fd9-9396-4715-895c-2b9c4593cd44",
+      "credentials": {
+        "telegramApi": {
+          "id": "FAgUONLC6Z1cWK32",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mengembalikan seluruh payload data asli dari Telegram Trigger ke sirkuit\nreturn $(\"Telegram Trigger\").all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        1600
+      ],
+      "id": "8a4f94fe-0d37-461e-9c87-8565403db60b",
+      "name": "otp if true"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Ambil data pesan asli dari Telegram Trigger\nconst dataTelegram = $(\"Telegram Trigger\").all();\n\n// 2. Hitung rumus OTP sistem untuk slot 15 menit SEKARANG\nconst blockSekarang = Math.floor(Date.now() / 900000);\nconst seedSekarang = blockSekarang ^ 54321;\nconst otpSahSistem = ((seedSekarang * 1103515245 + 12345) % 900000 + 100000).toString();\n\n// 3. Injeksi OTP sah ini langsung ke variabel n8n (KODE 999999 SUDAH DIHAPUS TOTAL)\nfor (let item of dataTelegram) {\n    item.json.otp_sah_sistem = otpSahSistem;\n}\n\nreturn dataTelegram;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        2448
+      ],
+      "id": "bbd0572d-5444-4beb-a55d-03961cd7a1d1",
+      "name": "otp if false"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b04d6a80-ab1e-418a-94dd-cb4dc29254a0",
+              "name": "jenis_input",
+              "value": "={{ $('Upload file2').isExecuted ? 'Input 4' : ($('Upload file1').isExecuted ? 'Input 3' : ($('Upload file').isExecuted ? 'Input 2' : 'Input 1')) }}",
+              "type": "string"
+            },
+            {
+              "id": "f879f368-2b32-41e8-b1c4-2ee3ca938c88",
+              "name": "teks_final",
+              "value": "={{ $('Extract from File').isExecuted ? $('Extract from File').item.json.text : ($('Transcribe a recording').isExecuted ? $('Transcribe a recording').item.json.candidates[0].content.parts[0].text : ($('Telegram Trigger').item.json.message.text || $('Telegram Trigger').item.json.message.caption || '')) }}",
+              "type": "string"
+            },
+            {
+              "id": "877e0286-565e-49d4-880a-e8cd76de1d1a",
+              "name": "link_drive",
+              "value": "={{ $('Upload file2').isExecuted ? $('Upload file2').item.json.webViewLink : ($('Upload file1').isExecuted ? $('Upload file1').item.json.webViewLink : ($('Upload file').isExecuted ? $('Upload file').item.json.webViewLink : '-')) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        1600
+      ],
+      "id": "494c4350-5518-444b-9a06-0ff40c86ff0a",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a Document",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a Voice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get a image": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a Document": {
+      "main": [
+        [
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a Voice": {
+      "main": [
+        [
+          {
+            "node": "Upload file2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Upload file1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file2": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "otp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "otp if true",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "otp if false",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "otp": {
+      "main": [
+        [
+          {
+            "node": "Send a text message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "otp if true": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "otp if false": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "37236355-525d-4c53-9e0f-8bc4f8447e39",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6463c31e7d83298084016e12bcd63118bb782b251a43f4c8c9229b94579ebf5f"
+  },
+  "nodeGroups": [],
+  "id": "9jPRLAHm9EIvJHKJ",
+  "tags": []
+}
