@@ -8,3 +8,5 @@ Repositori ini berisi:
 1. Buka n8n
 2. Pilih "Import from file"
 3. Upload file JSON dari folder `/workflows`
+
+# import munaqasyah.json file to n8n.
